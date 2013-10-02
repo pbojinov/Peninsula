@@ -1,6 +1,6 @@
 # Peninsula.js
 
-##### Peninsula.js is a small JavaScript libraryfor manipulating and generating client-side data.
+##### Peninsula.js is a small JavaScript library for manipulating and generating client-side data.
 
 ## API Reference
 
