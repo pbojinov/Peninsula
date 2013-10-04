@@ -74,92 +74,34 @@ window.Peninsula = (function (window, undefined) {
      */
 
     /**
-     * Extracted from jQuery source
+     * Add css to a new style tag and append it to the head of the page
+     *
+     * @method injectCSS
+     * @param styles {string} the css content as string
+     * @param elementId {string} id of the new style tag
      */
-    var documentIsReady = false;
+    var injectCSS = function(styles, elementId) {
+        var style = document.createElement('style');
+        style.setAttribute('type', 'text/css');
+        style.setAttribute('id', elementId ? elementId : uuid());
 
-    var documentReadyHandler = function (fn) {
-        if (!documentIsReady) {
-            documentIsReady = true;
-            if (document.addEventListener) {
-                document.removeEventListener('DOMContentLoaded', function () {
-                    documentReadyHandler(fn);
-                }, false);
-            }
-            else if (document.attachEvent) {
-                if (document.readyState == 'complete') {
-                    document.detachEvent('onreadystatechange', function () {
-                        documentReadyHandler(fn);
-                    });
-                }
-            }
-            fn();
+        //IE style.innerHTML bug - http://stackoverflow.com/a/5618889/907388
+        if (style.styleSheet) {
+            style.styleSheet.cssText = styles.css;
         }
+        else {
+            style.innerHTML = styles.css;
+        }
+        document.getElementsByTagName('head')[0].appendChild(style);
     };
 
-    var documentReady = function (fn) {
-        // Mozilla, Opera and webkit nightlies currently support this event
-        if (document.addEventListener) {
-            // Use the handy event callback
-            document.addEventListener('DOMContentLoaded', function () {
-                documentReadyHandler(fn);
-            }, false);
+    var injectHTML = function() {
 
-            // A fallback to window.onload, that will always work
-            window.addEventListener('load', function () {
-                documentReadyHandler(fn);
-            }, false);
-
-            // If IE event model is used
-        } else if (document.attachEvent) {
-            // ensure firing before onload,
-            // maybe late but safe also for iframes
-            document.attachEvent('onreadystatechange', function () {
-                documentReadyHandler(fn);
-            });
-
-            // A fallback to window.onload, that will always work
-            window.attachEvent('onload', function () {
-                documentReadyHandler(fn);
-            });
-
-            // If IE and not a frame
-            // continually check to see if the document is ready
-            var toplevel = false;
-
-            try {
-                toplevel = window.frameElement == null;
-            } catch (e) {
-            }
-
-            if (document.documentElement.doScroll && toplevel) {
-                doScrollCheck(function () {
-                    documentReadyHandler(fn);
-                });
-            }
-        }
-    };
-
-    var doScrollCheck = function (fn) {
-        if (documentIsReady) {
-            return;
-        }
-        try {
-            // If IE is used, use the trick by Diego Perini
-            // http://javascript.nwbox.com/IEContentLoaded/
-            document.documentElement.doScroll('left');
-        } catch (error) {
-            window.setTimeout(function () {
-                doScrollCheck(fn);
-            }, 1);
-            return;
-        }
-
-        fn();
     };
 
     /**
-     * Add an event listener on an elemnent or array of elements
+     * Add an event listener on an element or array of elements
+     *
      * @method addEventListener
      * @param element {DOMNode}
      * @param eventName {String}
@@ -597,8 +539,8 @@ window.Peninsula = (function (window, undefined) {
      * Expose public API
      * @type {Function}
      */
-    Peninsula.documentReady = documentReady;
     Peninsula.contains = contains;
+    Peninsula.typeOf = typeOf;
     Peninsula.isInteger = isInteger;
     Peninsula.isEmpty = isEmpty;
     Peninsula.isUrl = isUrl;
@@ -616,6 +558,7 @@ window.Peninsula = (function (window, undefined) {
     Peninsula.convertMS = convertMS;
     Peninsula.preloadImages = preloadImages;
     Peninsula.multiLine = multiLine;
+    Peninsula.injectCSS = injectCSS;
 
     /**
      * Public properties

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Results Fixture</title>
+</head>
+<body>
+
+<div class="resultsWrapper">
+    <div id="results"></div>
+    <div id="loader"><img src="img/loader.gif"/></div>
+</div>
+
+<script id="resultsTemplate" type="text/x-handlebars-template">
+    <ul>
+        {{#recipe}}
+        <li data-recipe-no={{recipe_no}} data-recipe-id={{recipe_id}}>
+            <table>
+                <tr>
+                    <td class="title">{{title}}</td>
+                    <td class="rating">
+                        <div class="stars">
+                            {{#ifRating rating}}
+                            {{this}}
+                            {{else}}
+                            {{this}}
+                            {{/ifRating}}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="description">{{truncate description 80 true}}</td>
+                </tr>
+            </table>
+        </li>
+        {{/recipe}}
+    </ul>
+</script>
+
+</body>
+</html>
