@@ -47,7 +47,7 @@ proxies = {
 
 //Code coverage
 preprocessors = {
-    'app/js/recipeSearch.js': 'coverage'
+    'peninsula.js': 'coverage'
 };
 
 // list of files to exclude
@@ -96,7 +96,7 @@ autoWatch = true;
 // - Safari (only Mac)
 // - PhantomJS
 // - IE (only Windows)
-browsers = ['Chrome'];
+browsers = ['Firefox'];
 
 
 // If browser does not capture in given timeout [ms], kill it

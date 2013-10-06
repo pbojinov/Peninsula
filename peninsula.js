@@ -10,7 +10,9 @@ window.Peninsula = (function (window, undefined) {
         location = window.location,
         document = window.document,
         currentAbsolutePath = location.toString(),
-        baseUrl = currentAbsolutePath.substring(0, currentAbsolutePath.lastIndexOf('/')) + '/';
+        baseUrl = currentAbsolutePath.substring(0, currentAbsolutePath.lastIndexOf('/')) + '/',
+        injectedScripts = [],
+        injectedStyles = [];
 
     var Peninsula = {};
 
@@ -19,32 +21,127 @@ window.Peninsula = (function (window, undefined) {
      *
      * x in y checks to the item without triggering a call to it
      */
-    if (!('indexOf' in Array.prototype)) {
-        Array.prototype.indexOf = function (item) {
-            for (var i = 0; i < this.length; i++) {
-                if (this[i] === item) {
-                    return i;
+
+    // ES5 15.4.4.14 Array.prototype.indexOf ( searchElement [ , fromIndex ] )
+    // From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/indexOf
+    if (!Array.prototype.indexOf) {
+        Array.prototype.indexOf = function (searchElement /*, fromIndex */) {
+            "use strict";
+
+            if (this === void 0 || this === null) { throw new TypeError(); }
+
+            var t = Object(this);
+            var len = t.length >>> 0;
+            if (len === 0) { return -1; }
+
+            var n = 0;
+            if (arguments.length > 0) {
+                n = Number(arguments[1]);
+                if (isNaN(n)) {
+                    n = 0;
+                } else if (n !== 0 && n !== (1 / 0) && n !== -(1 / 0)) {
+                    n = (n > 0 || -1) * Math.floor(Math.abs(n));
+                }
+            }
+
+            if (n >= len) { return -1; }
+
+            var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
+
+            for (; k < len; k++) {
+                if (k in t && t[k] === searchElement) {
+                    return k;
                 }
             }
             return -1;
         };
     }
 
-    if (!('forEach' in Array.prototype)) {
-        Array.prototype.forEach = function (action, that /*opt*/) {
-            for (var i = 0, n = this.length; i < n; i++)
-                if (i in this)
-                    action.call(that, this[i], i, this);
+    // ES5 15.4.4.18 Array.prototype.forEach ( callbackfn [ , thisArg ] )
+    // From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/forEach
+    if (!Array.prototype.forEach) {
+        Array.prototype.forEach = function (fun /*, thisp */) {
+            "use strict";
+
+            if (this === void 0 || this === null) { throw new TypeError(); }
+
+            var t = Object(this);
+            var len = t.length >>> 0;
+            if (typeof fun !== "function") { throw new TypeError(); }
+
+            var thisp = arguments[1], i;
+            for (i = 0; i < len; i++) {
+                if (i in t) {
+                    fun.call(thisp, t[i], i, t);
+                }
+            }
         };
     }
 
-    if (!('map' in Array.prototype)) {
-        Array.prototype.map = function (mapper, that /*opt*/) {
-            var other = new Array(this.length);
-            for (var i = 0, n = this.length; i < n; i++)
-                if (i in this)
-                    other[i] = mapper.call(that, this[i], i, this);
-            return other;
+    // ES5 15.4.4.19 Array.prototype.map ( callbackfn [ , thisArg ] )
+    // From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/Map
+    if (!Array.prototype.map) {
+        Array.prototype.map = function (fun /*, thisp */) {
+            "use strict";
+
+            if (this === void 0 || this === null) { throw new TypeError(); }
+
+            var t = Object(this);
+            var len = t.length >>> 0;
+            if (typeof fun !== "function") { throw new TypeError(); }
+
+            var res = []; res.length = len;
+            var thisp = arguments[1], i;
+            for (i = 0; i < len; i++) {
+                if (i in t) {
+                    res[i] = fun.call(thisp, t[i], i, t);
+                }
+            }
+
+            return res;
+        };
+    }
+
+    // ES5 15.4.4.21 Array.prototype.reduce ( callbackfn [ , initialValue ] )
+    // From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/Reduce
+    if (!Array.prototype.reduce) {
+        Array.prototype.reduce = function (fun /*, initialValue */) {
+            "use strict";
+
+            if (this === void 0 || this === null) { throw new TypeError(); }
+
+            var t = Object(this);
+            var len = t.length >>> 0;
+            if (typeof fun !== "function") { throw new TypeError(); }
+
+            // no value to return if no initial value and an empty array
+            if (len === 0 && arguments.length === 1) { throw new TypeError(); }
+
+            var k = 0;
+            var accumulator;
+            if (arguments.length >= 2) {
+                accumulator = arguments[1];
+            } else {
+                do {
+                    if (k in t) {
+                        accumulator = t[k++];
+                        break;
+                    }
+
+                    // if array contains no values, no initial value to return
+                    if (++k >= len) { throw new TypeError(); }
+                }
+                while (true);
+            }
+
+            while (k < len) {
+                if (k in t) {
+                    accumulator = fun.call(undefined, accumulator, t[k], k, t);
+                }
+                k++;
+            }
+
+            return accumulator;
         };
     }
 
@@ -124,12 +221,13 @@ window.Peninsula = (function (window, undefined) {
      * https://gist.github.com/pbojinov/4956018
      *
      * @method contains
-     * @param substring
+     * @param {string} string
+     * @param {string} substring
      * @returns {boolean}
      */
 
-    var contains = function (substring) {
-        return this.indexOf(substring) !== -1;
+    var contains = function (string, substring) {
+        return string.indexOf(substring) !== -1;
     };
 
     /**
@@ -165,7 +263,7 @@ window.Peninsula = (function (window, undefined) {
             return true;
         }
         else if (t === 'array') {
-            return (o.length === 0);
+            return (object.length === 0);
         }
         return false;
     };
@@ -182,10 +280,17 @@ window.Peninsula = (function (window, undefined) {
             return url.match(new RegExp('^[A-Za-z]*:\/\/'));
         }
         else {
-            throw 'invalid parameter. can only check a string'
+            return false;
         }
     };
 
+    /**
+     * TODO - Injection Manager for 0.2.0
+     *
+     * Manage list of all injects css, html, js (by id or uuid)
+     * Last injected css, html, js
+     * First injected css, html, js
+     */
 
     /**
      *  Tested with:
@@ -197,9 +302,10 @@ window.Peninsula = (function (window, undefined) {
      *
      * @method loadScript
      * @param url
+     * @param [id] optional script id
      * @param callback
      */
-    var loadScript = function (url, callback) {
+    var loadScript = function (url, id, callback) {
         var script = document.createElement('script'),
             loaded;
         script.setAttribute('src', url);
@@ -213,6 +319,38 @@ window.Peninsula = (function (window, undefined) {
         }
         document.getElementsByTagName('head')[0].appendChild(script);
     };
+
+    /**
+     * Get all scripts on the page
+     * @returns [Array] array of script tags
+     */
+    var getScripts = function() {
+        return document.getElementsByTagName('script');
+    };
+
+    /**
+     * Return all injected scripts loaded on the page by Peninsula
+     * @returns [Array] array of script tags
+     */
+    var getInjectedScripts = function() {
+        return injectedScripts;
+    };
+
+    /**
+     * Return all styles on the page
+     * @returns [Array] array of style tags
+     */
+    var getStyles = function() {
+        return document.getElementsByTagName('style');
+    };
+
+    /**
+     * Return all styles loaded on the page by Peninsula
+     * @returns [Array] array of style tags
+     */
+    var getInjectedStyles = function() {
+        return injectedStyles;
+    }
 
     /**
      *
@@ -539,12 +677,16 @@ window.Peninsula = (function (window, undefined) {
      * Expose public API
      * @type {Function}
      */
-    Peninsula.contains = contains;
-    Peninsula.typeOf = typeOf;
-    Peninsula.isInteger = isInteger;
-    Peninsula.isEmpty = isEmpty;
-    Peninsula.isUrl = isUrl;
+    Peninsula.contains = contains; //tested
+    Peninsula.typeOf = typeOf; //tested
+    Peninsula.isInteger = isInteger; ///tested
+    Peninsula.isEmpty = isEmpty; //tested
+    Peninsula.isUrl = isUrl; //
     Peninsula.loadScript = loadScript;
+    Peninsula.getInjectedScripts = getInjectedScripts;
+    Peninsula.getInjectedStyles = getInjectedStyles;
+    Peninsula.getScripts = getScripts;
+    Peninsula.getStyles = getStyles;
     Peninsula.cformat = cformat;
     Peninsula.first = first;
     Peninsula.merge = merge;
