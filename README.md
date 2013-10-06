@@ -6,8 +6,6 @@
 
 ### Functions
 
-#### documentReady
-
 #### contains
 
 #### isInteger
