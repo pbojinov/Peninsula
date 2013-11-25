@@ -48,6 +48,11 @@
 
 #### _baseUrl
 
+## Why?
+
+
+Peninsula is a collection of common functions I have constantly been using over the last year. Instead of copying and pasting from project to project, some justice had to be done and Peninsula.js was born.
+
 ## Release History
 
 * 2013-09-05   v0.1.0 inital release
