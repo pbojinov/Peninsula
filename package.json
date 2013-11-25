@@ -1,6 +1,6 @@
 {
   "name": "Peninsula.js",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Peninsula.js is a small JavaScript library for manipulating and generating client-side data.",
   "main": "peninsula.js",
   "directories": {
