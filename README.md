@@ -48,11 +48,9 @@
 
 #### _baseUrl
 
-## TODO
+## Release History
 
-1. shortcut character
-3. group functions
-5. write mocha tests
+* 2013-09-05   v0.1.0 inital release
 
 ## License
 
