@@ -3,7 +3,7 @@
  * Date: 9/11/13
  */
 
-window.Peninsula = (function (window, undefined) {
+window.Peninsula = (function(window, undefined) {
 
     var version = '0.0.1',
         seed = '1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm',
@@ -11,139 +11,10 @@ window.Peninsula = (function (window, undefined) {
         document = window.document,
         currentAbsolutePath = location.toString(),
         baseUrl = currentAbsolutePath.substring(0, currentAbsolutePath.lastIndexOf('/')) + '/',
-        injectedScripts = [],
-        injectedStyles = [];
+        injectedScripts = {},
+        injectedStyles = {};
 
     var Peninsula = {};
-
-    /**
-     * Polyfill some functionality in aka fix some IE bugs
-     *
-     * x in y checks to the item without triggering a call to it
-     */
-
-    // ES5 15.4.4.14 Array.prototype.indexOf ( searchElement [ , fromIndex ] )
-    // From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/indexOf
-    if (!Array.prototype.indexOf) {
-        Array.prototype.indexOf = function (searchElement /*, fromIndex */) {
-            "use strict";
-
-            if (this === void 0 || this === null) { throw new TypeError(); }
-
-            var t = Object(this);
-            var len = t.length >>> 0;
-            if (len === 0) { return -1; }
-
-            var n = 0;
-            if (arguments.length > 0) {
-                n = Number(arguments[1]);
-                if (isNaN(n)) {
-                    n = 0;
-                } else if (n !== 0 && n !== (1 / 0) && n !== -(1 / 0)) {
-                    n = (n > 0 || -1) * Math.floor(Math.abs(n));
-                }
-            }
-
-            if (n >= len) { return -1; }
-
-            var k = n >= 0 ? n : Math.max(len - Math.abs(n), 0);
-
-            for (; k < len; k++) {
-                if (k in t && t[k] === searchElement) {
-                    return k;
-                }
-            }
-            return -1;
-        };
-    }
-
-    // ES5 15.4.4.18 Array.prototype.forEach ( callbackfn [ , thisArg ] )
-    // From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/forEach
-    if (!Array.prototype.forEach) {
-        Array.prototype.forEach = function (fun /*, thisp */) {
-            "use strict";
-
-            if (this === void 0 || this === null) { throw new TypeError(); }
-
-            var t = Object(this);
-            var len = t.length >>> 0;
-            if (typeof fun !== "function") { throw new TypeError(); }
-
-            var thisp = arguments[1], i;
-            for (i = 0; i < len; i++) {
-                if (i in t) {
-                    fun.call(thisp, t[i], i, t);
-                }
-            }
-        };
-    }
-
-    // ES5 15.4.4.19 Array.prototype.map ( callbackfn [ , thisArg ] )
-    // From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/Map
-    if (!Array.prototype.map) {
-        Array.prototype.map = function (fun /*, thisp */) {
-            "use strict";
-
-            if (this === void 0 || this === null) { throw new TypeError(); }
-
-            var t = Object(this);
-            var len = t.length >>> 0;
-            if (typeof fun !== "function") { throw new TypeError(); }
-
-            var res = []; res.length = len;
-            var thisp = arguments[1], i;
-            for (i = 0; i < len; i++) {
-                if (i in t) {
-                    res[i] = fun.call(thisp, t[i], i, t);
-                }
-            }
-
-            return res;
-        };
-    }
-
-    // ES5 15.4.4.21 Array.prototype.reduce ( callbackfn [ , initialValue ] )
-    // From https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/Reduce
-    if (!Array.prototype.reduce) {
-        Array.prototype.reduce = function (fun /*, initialValue */) {
-            "use strict";
-
-            if (this === void 0 || this === null) { throw new TypeError(); }
-
-            var t = Object(this);
-            var len = t.length >>> 0;
-            if (typeof fun !== "function") { throw new TypeError(); }
-
-            // no value to return if no initial value and an empty array
-            if (len === 0 && arguments.length === 1) { throw new TypeError(); }
-
-            var k = 0;
-            var accumulator;
-            if (arguments.length >= 2) {
-                accumulator = arguments[1];
-            } else {
-                do {
-                    if (k in t) {
-                        accumulator = t[k++];
-                        break;
-                    }
-
-                    // if array contains no values, no initial value to return
-                    if (++k >= len) { throw new TypeError(); }
-                }
-                while (true);
-            }
-
-            while (k < len) {
-                if (k in t) {
-                    accumulator = fun.call(undefined, accumulator, t[k], k, t);
-                }
-                k++;
-            }
-
-            return accumulator;
-        };
-    }
 
     /**
      * For browsers like IE8 and below so we do not reek havok
@@ -167,8 +38,151 @@ window.Peninsula = (function (window, undefined) {
     }
 
     /**
+     *  Base64 encode / decode
+     *  http://www.webtoolkit.info/
+     **/
+
+    var Base64 = {
+
+        // private property
+        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+        // public method for encoding
+        encode: function(input) {
+            var output = "";
+            var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+            var i = 0;
+
+            input = Base64._utf8_encode(input);
+
+            while (i < input.length) {
+
+                chr1 = input.charCodeAt(i++);
+                chr2 = input.charCodeAt(i++);
+                chr3 = input.charCodeAt(i++);
+
+                enc1 = chr1 >> 2;
+                enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                enc4 = chr3 & 63;
+
+                if (isNaN(chr2)) {
+                    enc3 = enc4 = 64;
+                } else if (isNaN(chr3)) {
+                    enc4 = 64;
+                }
+
+                output = output +
+                    this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+                    this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+
+            }
+
+            return output;
+        },
+
+        // public method for decoding
+        decode: function(input) {
+            var output = "";
+            var chr1, chr2, chr3;
+            var enc1, enc2, enc3, enc4;
+            var i = 0;
+
+            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+            while (i < input.length) {
+
+                enc1 = this._keyStr.indexOf(input.charAt(i++));
+                enc2 = this._keyStr.indexOf(input.charAt(i++));
+                enc3 = this._keyStr.indexOf(input.charAt(i++));
+                enc4 = this._keyStr.indexOf(input.charAt(i++));
+
+                chr1 = (enc1 << 2) | (enc2 >> 4);
+                chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+                chr3 = ((enc3 & 3) << 6) | enc4;
+
+                output = output + String.fromCharCode(chr1);
+
+                if (enc3 != 64) {
+                    output = output + String.fromCharCode(chr2);
+                }
+                if (enc4 != 64) {
+                    output = output + String.fromCharCode(chr3);
+                }
+
+            }
+
+            output = Base64._utf8_decode(output);
+
+            return output;
+
+        },
+
+        // private method for UTF-8 encoding
+        _utf8_encode: function(string) {
+            string = string.replace(/\r\n/g, "\n");
+            var utftext = "";
+
+            for (var n = 0; n < string.length; n++) {
+
+                var c = string.charCodeAt(n);
+
+                if (c < 128) {
+                    utftext += String.fromCharCode(c);
+                } else if ((c > 127) && (c < 2048)) {
+                    utftext += String.fromCharCode((c >> 6) | 192);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                } else {
+                    utftext += String.fromCharCode((c >> 12) | 224);
+                    utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                }
+
+            }
+
+            return utftext;
+        },
+
+        // private method for UTF-8 decoding
+        _utf8_decode: function(utftext) {
+            var string = "";
+            var i = 0;
+            var c = c1 = c2 = 0;
+
+            while (i < utftext.length) {
+
+                c = utftext.charCodeAt(i);
+
+                if (c < 128) {
+                    string += String.fromCharCode(c);
+                    i++;
+                } else if ((c > 191) && (c < 224)) {
+                    c2 = utftext.charCodeAt(i + 1);
+                    string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                    i += 2;
+                } else {
+                    c2 = utftext.charCodeAt(i + 1);
+                    c3 = utftext.charCodeAt(i + 2);
+                    string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                    i += 3;
+                }
+
+            }
+            return string;
+        }
+    };
+
+    /**
      * Main API Function
      */
+
+    var encode = function(input) {
+        return Base64.encode(input);
+    };
+
+    var decode = function() {
+        return Base64.decode(input);
+    };
 
     /**
      * Add css to a new style tag and append it to the head of the page
@@ -178,22 +192,30 @@ window.Peninsula = (function (window, undefined) {
      * @param elementId {string} id of the new style tag
      */
     var injectCSS = function(styles, elementId) {
-        var style = document.createElement('style');
+        var style = document.createElement('style'),
+            elementId = elementId || uuid();
         style.setAttribute('type', 'text/css');
-        style.setAttribute('id', elementId ? elementId : uuid());
+        style.setAttribute('id', elementId);
 
         //IE style.innerHTML bug - http://stackoverflow.com/a/5618889/907388
         if (style.styleSheet) {
             style.styleSheet.cssText = styles.css;
-        }
-        else {
+        } else {
             style.innerHTML = styles.css;
         }
+        injectedStyles.elementId = styles;
         document.getElementsByTagName('head')[0].appendChild(style);
     };
 
-    var injectHTML = function() {
-
+    /**
+     * Append div with content to document body
+     */
+    var injectHTML = function(content, elementId) {
+        var div = document.createElement('div'),
+            elementId = elementId || uuid();
+        div.setAttribute('id', elementId);
+        div.innerHTML = content;
+        document.body.appendChild(div);
     };
 
     /**
@@ -204,7 +226,7 @@ window.Peninsula = (function (window, undefined) {
      * @param eventName {String}
      * @param eventHandler {Function}
      */
-    var addEventListener = function (element, eventName, eventHandler) {
+    var addEventListener = function(element, eventName, eventHandler) {
         if (typeOf(eventName) === 'array') {
             for (var i = 0, l = eventName.length; i < l; ++i) {
                 addEventListener(element, eventName[i], eventHandler);
@@ -226,7 +248,7 @@ window.Peninsula = (function (window, undefined) {
      * @returns {boolean}
      */
 
-    var contains = function (string, substring) {
+    var contains = function(string, substring) {
         return string.indexOf(substring) !== -1;
     };
 
@@ -237,7 +259,7 @@ window.Peninsula = (function (window, undefined) {
      * @param value {} the value to test
      * @return {boolean} whether it is an integer
      */
-    var isInteger = function (value) {
+    var isInteger = function(value) {
         return (parseFloat(value) == parseInt(value)) && !isNaN(value);
     };
 
@@ -247,7 +269,7 @@ window.Peninsula = (function (window, undefined) {
      * @param object
      *  The object to test.
      */
-    var isEmpty = function (object) {
+    var isEmpty = function(object) {
         if (!object) {
             return true;
         }
@@ -261,8 +283,7 @@ window.Peninsula = (function (window, undefined) {
                 }
             }
             return true;
-        }
-        else if (t === 'array') {
+        } else if (t === 'array') {
             return (object.length === 0);
         }
         return false;
@@ -275,11 +296,10 @@ window.Peninsula = (function (window, undefined) {
      * @param url
      * @returns {*}
      */
-    var isUrl = function (url) {
+    var isUrl = function(url) {
         if (typeof url === 'string') {
             return url.match(new RegExp('^[A-Za-z]*:\/\/'));
-        }
-        else {
+        } else {
             return false;
         }
     };
@@ -305,18 +325,21 @@ window.Peninsula = (function (window, undefined) {
      * @param [id] optional script id
      * @param callback
      */
-    var loadScript = function (url, id, callback) {
+    var loadScript = function(url, id, callback) {
         var script = document.createElement('script'),
+            id = id || uuid(),
             loaded;
         script.setAttribute('src', url);
+        script.setAttribute('id', id);
         if (callback) {
-            script.onreadystatechange = script.onload = function () {
+            script.onreadystatechange = script.onload = function() {
                 if (!loaded) {
                     callback();
                 }
                 loaded = true;
             };
         }
+        injectedScripts.id = url;
         document.getElementsByTagName('head')[0].appendChild(script);
     };
 
@@ -328,20 +351,20 @@ window.Peninsula = (function (window, undefined) {
         return document.getElementsByTagName('script');
     };
 
+        /**
+     * Return all styles on the page
+     * @returns [Array] array of style tags
+     */
+    var getStyles = function() {
+        return document.getElementsByTagName('style');
+    };
+
     /**
      * Return all injected scripts loaded on the page by Peninsula
      * @returns [Array] array of script tags
      */
     var getInjectedScripts = function() {
         return injectedScripts;
-    };
-
-    /**
-     * Return all styles on the page
-     * @returns [Array] array of style tags
-     */
-    var getStyles = function() {
-        return document.getElementsByTagName('style');
     };
 
     /**
@@ -359,10 +382,10 @@ window.Peninsula = (function (window, undefined) {
      * @param arguments
      * @returns {*}
      */
-    var cformat = function (string, arguments) {
+    var cformat = function(string, arguments) {
         var pattern = /\{\d+\}/g;
         var args = arguments;
-        return string.replace(pattern, function (capture) {
+        return string.replace(pattern, function(capture) {
             return args[capture.match(/\d+/)];
         });
     };
@@ -374,7 +397,7 @@ window.Peninsula = (function (window, undefined) {
      * @return {Number|String} the index in the container, or null
      * @throws Exception if container is not array, object or string
      */
-    var first = function (container) {
+    var first = function(container) {
         if (!container) {
             return null;
         }
@@ -407,7 +430,7 @@ window.Peninsula = (function (window, undefined) {
      * @param key String
      * @return Boolean
      */
-    var has = function (object, key) {
+    var has = function(object, key) {
         return Object.prototype.hasOwnProperty.call(object, key);
     };
 
@@ -418,32 +441,28 @@ window.Peninsula = (function (window, undefined) {
      * @param input {string|array} the string or array to shuffle
      * @returns {string|array|boolean} the shuffled string
      */
-    var shuffle = function (input) {
+    var shuffle = function(input) {
         if (!input.length) {
             return false;
-        }
-        else {
+        } else {
             var i, j, k, x;
             if (typeof input === 'string') {
                 var arr = input.split('');
-                for (j, x, i = arr.length; i; j = parseInt(Math.random() * i), x = arr[--i], arr[i] = arr[j], arr[j] = x) {
-                }
+                for (j, x, i = arr.length; i; j = parseInt(Math.random() * i), x = arr[--i], arr[i] = arr[j], arr[j] = x) {}
                 arr = arr.join('');
                 return arr;
-            }
-            else if (typeOf(input) === 'array') {
+            } else if (typeOf(input) === 'array') {
                 i = input.length;
                 while (--i) {
-                    j = Math.floor(Math.random() * ( i + 1 ));
+                    j = Math.floor(Math.random() * (i + 1));
                     var tempi = input[i];
                     var tempj = input[j];
                     input[i] = tempj;
                     input[j] = tempi;
                 }
                 return input;
-            }
-            else {
-                throw 'invalid parameter. can only shuffle and array or string'
+            } else {
+                throw 'invalid parameter: can only shuffle an array or string'
             }
         }
     };
@@ -456,7 +475,7 @@ window.Peninsula = (function (window, undefined) {
      * @param maxLength
      * @returns {*}
      */
-    var trim = function (string, maxLength) {
+    var trim = function(string, maxLength) {
         var trimmedString = string,
             trim,
             lastSpace;
@@ -469,8 +488,7 @@ window.Peninsula = (function (window, undefined) {
             if (lastSpace === -1) {
                 trimmedString = trimmedString.slice(0, maxLength - 3);
                 trimmedString += '...';
-            }
-            else if (lastSpace > -1) {
+            } else if (lastSpace > -1) {
                 trimmedString = trimmedString.slice(0, maxLength - 3);
                 trim = trimmedString.lastIndexOf(' ');
                 trimmedString = trimmedString.slice(0, trim);
@@ -486,7 +504,7 @@ window.Peninsula = (function (window, undefined) {
      * @method now
      * @returns {number}
      */
-    var now = function () {
+    var now = function() {
         return new Date().getTime();
     };
 
@@ -497,7 +515,7 @@ window.Peninsula = (function (window, undefined) {
      * @param {int} milliseconds
      * @return {Object} h = hour, m = minute, s = seconds
      */
-    var convertMS = function (milliseconds) {
+    var convertMS = function(milliseconds) {
         var h, m, s;
         s = Math.floor(milliseconds / 1000);
         m = Math.floor(s / 60);
@@ -505,7 +523,12 @@ window.Peninsula = (function (window, undefined) {
         h = Math.floor(m / 60);
         m = m % 60;
         h = h % 24;
-        return {h: h, m: m, s: s, total: (h > 0) ? (h + ':' + m + ':' + s) : (m + ':' + s)};
+        return {
+            h: h,
+            m: m,
+            s: s,
+            total: (h > 0) ? (h + ':' + m + ':' + s) : (m + ':' + s)
+        };
     };
 
     /**
@@ -517,7 +540,7 @@ window.Peninsula = (function (window, undefined) {
      * @returns {string} a random string of maximum length 74
      */
 
-    var token = function (length) {
+    var token = function(length) {
         length = length || 10;
         var today = new Date().getTime();
         return (shuffle((seed + today), length));
@@ -529,7 +552,7 @@ window.Peninsula = (function (window, undefined) {
      *
      * return type
      */
-    var typeOf = function (value) {
+    var typeOf = function(value) {
         var s = typeof value;
         if (s === 'object') {
             if (value === null) {
@@ -537,17 +560,14 @@ window.Peninsula = (function (window, undefined) {
             }
             if (value instanceof Array || (value.constructor && value.constructor.name === 'Array') || Object.prototype.toString.apply(value) === '[object Array]') {
                 s = 'array';
-            }
-            else if (typeof(value) != 'undefined') {
+            } else if (typeof(value) != 'undefined') {
                 return value;
-            }
-            else if (typeof(value.constructor) != 'undefined' && typeof(value.constructor.name) != 'undefined') {
+            } else if (typeof(value.constructor) != 'undefined' && typeof(value.constructor.name) != 'undefined') {
                 if (value.constructor.name == 'Object') {
                     return 'object';
                 }
                 return value.constructor.name;
-            }
-            else {
+            } else {
                 return 'object';
             }
         }
@@ -562,9 +582,10 @@ window.Peninsula = (function (window, undefined) {
      * @method uuid
      * @returns {*|string}
      */
-    var uuid = function () {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-            var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    var uuid = function() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+            var r = Math.random() * 16 | 0,
+                v = c == 'x' ? r : (r & 0x3 | 0x8);
             return v.toString(16);
         });
     };
@@ -575,7 +596,7 @@ window.Peninsula = (function (window, undefined) {
      * @mehod renamePropery
      * @return {Object}
      */
-    var renameProperty = function (obj, oldName, newName) {
+    var renameProperty = function(obj, oldName, newName) {
         // Check for the old property name to avoid a ReferenceError in strict mode.
         if (obj.hasOwnProperty(oldName)) {
             obj[newName] = obj[oldName];
@@ -595,20 +616,18 @@ window.Peninsula = (function (window, undefined) {
      * @param query
      * @returns {*}
      */
-    var select = function (query) {
+    var select = function(query) {
 
         var id = /#/g,
             match = query.match(id);
 
         //user is asking for an element by id
-        if (!!match) {
+        if ( !! match) {
             return document.getElementById(query.replace(/#/g, ''));
-        }
-        else if (('querySelectorAll' in document)) {
+        } else if (('querySelectorAll' in document)) {
             var el = document.querySelectorAll(query);
             return el.length > 1 ? el : el[0];
-        }
-        else {
+        } else {
             throw 'select error, querySelectorAll not implemented';
         }
     };
@@ -621,12 +640,11 @@ window.Peninsula = (function (window, undefined) {
      * @param mergeFrom {array} array to merge into first part
      * @returns {*}
      */
-    var merge = function (mergeTo, mergeFrom) {
+    var merge = function(mergeTo, mergeFrom) {
         if ((typeOf(mergeTo) === 'array') && (typeOf(mergeFrom) === 'array')) {
             Array.prototype.push.apply(mergeTo, mergeFrom);
             return mergeTo;
-        }
-        else {
+        } else {
             throw 'merge invalid parameters, must pass in two arrays';
         }
     };
@@ -641,22 +659,20 @@ window.Peninsula = (function (window, undefined) {
     var preloadImages = function(resources) {
         var i;
         if (typeOf(resources) === 'array') {
-            for (i = 0 ; i < resources.length ; i++) {
+            for (i = 0; i < resources.length; i++) {
                 createImage(resources[i]);
             }
-        }
-        else if (arguments.length > 1) {
-            for (i = 0 ; i < arguments.length ; i++) {
+        } else if (arguments.length > 1) {
+            for (i = 0; i < arguments.length; i++) {
                 createImage(arguments[i]);
             }
-        }
-        else if (typeof resources === 'string') {
+        } else if (typeof resources === 'string') {
             createImage(resources);
-        }
-        else {
+        } else {
             throw 'preloadImages invalid parameters, must pass in an array or string of resources'
         }
-        function createImage (src) {
+
+        function createImage(src) {
             var img = new Image();
             img.src = src;
         }
@@ -669,7 +685,7 @@ window.Peninsula = (function (window, undefined) {
      * @param obj
      * @returns {*}
      */
-    var multiLine = function (obj) {
+    var multiLine = function(obj) {
         return obj.toString().match(/[^]*\/\*([^]*)\*\/\}$/)[1];
     };
 
@@ -677,6 +693,9 @@ window.Peninsula = (function (window, undefined) {
      * Expose public API
      * @type {Function}
      */
+
+    Peninsula.encode = encode;
+    Peninsula.decode = decode;
     Peninsula.contains = contains; //tested
     Peninsula.typeOf = typeOf; //tested
     Peninsula.isInteger = isInteger; ///tested
@@ -708,6 +727,12 @@ window.Peninsula = (function (window, undefined) {
      */
     Peninsula._version = version;
     Peninsula._baseUrl = baseUrl;
+
+    /**
+     * Shorthand way to access Peninsula
+     */
+
+    window.Pen = Peninsula;
 
     return Peninsula;
 
