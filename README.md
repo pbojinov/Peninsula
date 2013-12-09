@@ -60,3 +60,7 @@ Peninsula is a collection of common functions I have constantly been using over 
 ## License
 
 MIT license
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/pbojinov/peninsula/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
