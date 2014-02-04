@@ -1,6 +1,6 @@
 # Peninsula.js
 
-##### Peninsula.js is a small JavaScript library for manipulating and generating client-side data.
+##### Peninsula.js is a small JavaScript library of commonly resuable functions for client side use.
 
 ## API Reference
 
@@ -48,10 +48,10 @@
 
 #### _baseUrl
 
-## Why?
+## Why Another Library?
 
 
-Peninsula is a collection of common functions I have constantly been using over the last year. Instead of copying and pasting from project to project, some justice had to be done and Peninsula.js was born.
+Peninsula is a collection of commonly resuable functions. It was born to prevent copying and pasting common functions from project to project.
 
 ## Release History
 
