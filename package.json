@@ -1,15 +1,15 @@
 {
   "name": "Peninsula.js",
-  "version": "0.1.1",
-  "description": "Peninsula.js is a small JavaScript library for manipulating and generating client-side data.",
+  "version": "0.2.1",
+  "description": "Peninsula is a collection of commonly used client-side functions",
   "main": "peninsula.js",
-  "directories": {
-    "test": "test"
+  "scripts": {
+    "test": "karma start test/peninsula.conf.js --log-level info --single-run"
   },
   "dependencies": {
-    "phantomjs": "~1.9.2-2"
   },
   "devDependencies": {
+    "phantomjs": "~1.9.2-2",
     "karma": "~0.10.2",
     "karma-chrome-launcher": "~0.1.0",
     "karma-coffee-preprocessor": "~0.1.0",
@@ -20,9 +20,6 @@
     "karma-requirejs": "~0.1.0",
     "karma-script-launcher": "~0.1.0",
     "karma-phantomjs-launcher": "~0.1.0"
-  },
-  "scripts": {
-    "test": ""
   },
   "repository": {
     "type": "git",

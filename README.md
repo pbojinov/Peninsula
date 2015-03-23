@@ -1,10 +1,28 @@
 # Peninsula.js
 
-##### Peninsula.js is a small JavaScript library of commonly resuable functions for client side use.
+![Peninsula Logo](http://imgur.com/DF9YbOW)
+
+## About 
+
+Peninsula is a collection of commonly resuable client-side functions. It was born to prevent copying and pasting frequently used common functions from project to project.
+
+## Getting Started
+
+```
+bower install penin
+
+## Running Tests
+
+```
+npm install
+npm test
+```
 
 ## API Reference
 
 ### Functions
+
+---
 
 #### contains
 
@@ -44,23 +62,26 @@
 
 ### Properties
 
+---
+
 #### _version
 
 #### _baseUrl
 
-## Why Another Library?
+## Module forms
 
-
-Peninsula is a collection of commonly resuable functions. It was born to prevent copying and pasting common functions from project to project.
+Peninusla is currently not available in AMD, CommonJS or other modules. Please file an issue or submit a PR if you need support for other module formats.
 
 ## Release History
 
+* 2015-03-23   v0.2.1 update docs, fix npm test, fix karma.conf
 * 2013-09-05   v0.1.0 inital release
 
 ## License
 
 MIT license
 
+---
 
 [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/pbojinov/peninsula/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 

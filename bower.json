@@ -1,0 +1,26 @@
+{
+  "name": "Peninsula",
+  "main": "src/peninsula.js",
+  "version": "0.2.1",
+  "homepage": "https://github.com/pbojinov/Peninsula",
+  "authors": [
+    "Petar Bojinov <petarbojinov@gmail.com>"
+  ],
+  "description": "Peninsula is a collection of commonly used client-side functions",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "reusable",
+    "client-side",
+    "peninsula"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
