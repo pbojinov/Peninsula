@@ -1,18 +1,19 @@
 /**
  * Author: petar
- * Date: 9/11/13
+ * Date: 03/23/15
  */
 
 window.Peninsula = (function(window, undefined) {
 
-    var version = '0.0.1',
+    var version = '0.2.1',
         seed = '1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm',
         location = window.location,
         document = window.document,
         currentAbsolutePath = location.toString(),
         baseUrl = currentAbsolutePath.substring(0, currentAbsolutePath.lastIndexOf('/')) + '/',
         injectedScripts = {},
-        injectedStyles = {};
+        injectedStyles = {},
+        injectedStyleSheets = {};
 
     var Peninsula = {};
 
@@ -361,7 +362,7 @@ window.Peninsula = (function(window, undefined) {
 
     /**
      * Return all injected scripts loaded on the page by Peninsula
-     * @returns [Array] array of script tags
+     * @returns {Object} object of script tags
      */
     var getInjectedScripts = function() {
         return injectedScripts;
@@ -369,11 +370,19 @@ window.Peninsula = (function(window, undefined) {
 
     /**
      * Return all styles loaded on the page by Peninsula
-     * @returns [Array] array of style tags
+     * @returns {Object} object of style tags
      */
     var getInjectedStyles = function() {
         return injectedStyles;
-    }
+    };
+
+    /**
+     * Return all style sheets loaded on the page by Peninsula
+     * @returns {Object} object of style sheets
+     */
+    var getInjectedStylesSheets = function() {
+        return injectedStyleSheets;
+    };
 
     /**
      *
@@ -690,6 +699,74 @@ window.Peninsula = (function(window, undefined) {
     };
 
     /**
+     * Light wrapper around addEventListener for IE8 support
+     *
+     * @method bindEvent
+     * @param {DOMElement} element - the dom element on which to listen to
+     * @param {DOMEvent} eventName - event to listen for
+     * @param {function} eventHandler - function to call when event fires
+     */
+    var bindEvent = function(element, eventName, eventHandler) {
+        if (element.addEventListener) {
+            element.addEventListener(eventName, eventHandler, false);
+        } else if (element.attachEvent) {
+            element.attachEvent('on' + eventName, eventHandler);
+        }
+    };
+
+    /**
+     * Load a new theme style sheet in the head of the page
+     *
+     * @method injectStylesheet
+     * @param url {string} the url style sheet
+     * @param callback {function} optional callback function called when script loads
+     */
+    var injectStylesheet = function(url, callback) {
+        var sheet = document.createElement('link'),
+            id = uuid(),
+            loaded;
+        sheet.setAttribute('rel', 'stylesheet');
+        sheet.setAttribute('type', 'text/css');
+        sheet.setAttribute('href', url);
+        if (callback) {
+            sheet.onreadystatechange = sheet.onload = function() {
+                if (!loaded) {
+                    callback();
+                }
+                loaded = true;
+            };
+        }
+        document.getElementsByTagName('head')[0].appendChild(sheet);
+        injectedStyleSheets.id = url;
+    };
+
+    /**
+     * Determine if the context of where this code is being executed is an iframe
+     *
+     * @method isIframe
+     * @return {Boolean} true if executed in iframe, false otherwise
+     */
+    var inIframe = function() {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    };
+
+    /**
+     * Determine if context where this code is running is a touch device
+     * Test for Touch Events of Pointer Events running on touch-capable device
+     * 
+     * https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
+     * 
+     * @return {Boolean} true if device is touch, false otherwise
+     */
+    var isTouchDevice = function() {
+        return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) 
+    };
+
+    /**
      * Expose public API
      * @type {Function}
      */
@@ -720,6 +797,9 @@ window.Peninsula = (function(window, undefined) {
     Peninsula.preloadImages = preloadImages;
     Peninsula.multiLine = multiLine;
     Peninsula.injectCSS = injectCSS;
+    Peninsula.injectStylesheet = injectStylesheet;
+    Peninsula.inIframe = inIframe;
+    Peninsula.isTouchDevice = isTouchDevice;
 
     /**
      * Public properties
