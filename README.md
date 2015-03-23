@@ -1,5 +1,3 @@
-# Peninsula.js
-
 ![Peninsula Logo](http://i.imgur.com/jmrx99y.png)
 
 ## About 
