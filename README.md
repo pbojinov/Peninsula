@@ -1,6 +1,4 @@
-# Peninsula.js
-
-![Peninsula Logo](http://i.imgur.com/DF9YbOW.png =300x)
+<img src="http://i.imgur.com/DF9YbOW.png" width="350" height="350/>
 
 ## About 
 
