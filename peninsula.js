@@ -5,6 +5,8 @@
 
 window.Peninsula = (function(window, undefined) {
 
+    'use strict';
+
     var version = '0.2.1',
         seed = '1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm',
         location = window.location,
@@ -46,11 +48,11 @@ window.Peninsula = (function(window, undefined) {
     var Base64 = {
 
         // private property
-        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+        _keyStr: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
 
         // public method for encoding
         encode: function(input) {
-            var output = "";
+            var output = '';
             var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
             var i = 0;
 
@@ -84,12 +86,12 @@ window.Peninsula = (function(window, undefined) {
 
         // public method for decoding
         decode: function(input) {
-            var output = "";
+            var output = '';
             var chr1, chr2, chr3;
             var enc1, enc2, enc3, enc4;
             var i = 0;
 
-            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
 
             while (i < input.length) {
 
@@ -121,8 +123,8 @@ window.Peninsula = (function(window, undefined) {
 
         // private method for UTF-8 encoding
         _utf8_encode: function(string) {
-            string = string.replace(/\r\n/g, "\n");
-            var utftext = "";
+            string = string.replace(/\r\n/g, '\n');
+            var utftext = '';
 
             for (var n = 0; n < string.length; n++) {
 
@@ -146,7 +148,7 @@ window.Peninsula = (function(window, undefined) {
 
         // private method for UTF-8 decoding
         _utf8_decode: function(utftext) {
-            var string = "";
+            var string = '';
             var i = 0;
             var c = c1 = c2 = 0;
 
@@ -181,7 +183,7 @@ window.Peninsula = (function(window, undefined) {
         return Base64.encode(input);
     };
 
-    var decode = function() {
+    var decode = function(input) {
         return Base64.decode(input);
     };
 
@@ -217,27 +219,6 @@ window.Peninsula = (function(window, undefined) {
         div.setAttribute('id', elementId);
         div.innerHTML = content;
         document.body.appendChild(div);
-    };
-
-    /**
-     * Add an event listener on an element or array of elements
-     *
-     * @method addEventListener
-     * @param element {DOMNode}
-     * @param eventName {String}
-     * @param eventHandler {Function}
-     */
-    var addEventListener = function(element, eventName, eventHandler) {
-        if (typeOf(eventName) === 'array') {
-            for (var i = 0, l = eventName.length; i < l; ++i) {
-                addEventListener(element, eventName[i], eventHandler);
-            }
-        }
-        if ('addEventListener' in element) {
-            element.addEventListener(eventName, handler, false);
-        } else if ('attachEvent' in element) {
-            element.attachEvent('on' + eventName, handler);
-        }
     };
 
     /**
@@ -391,9 +372,9 @@ window.Peninsula = (function(window, undefined) {
      * @param arguments
      * @returns {*}
      */
-    var cformat = function(string, arguments) {
+    var cformat = function(string, theArguments) {
         var pattern = /\{\d+\}/g;
-        var args = arguments;
+        var args = theArguments;
         return string.replace(pattern, function(capture) {
             return args[capture.match(/\d+/)];
         });
@@ -471,7 +452,7 @@ window.Peninsula = (function(window, undefined) {
                 }
                 return input;
             } else {
-                throw 'invalid parameter: can only shuffle an array or string'
+                throw 'invalid parameter: can only shuffle an array or string';
             }
         }
     };
@@ -678,7 +659,7 @@ window.Peninsula = (function(window, undefined) {
         } else if (typeof resources === 'string') {
             createImage(resources);
         } else {
-            throw 'preloadImages invalid parameters, must pass in an array or string of resources'
+            throw 'preloadImages invalid parameters, must pass in an array or string of resources';
         }
 
         function createImage(src) {
@@ -763,7 +744,7 @@ window.Peninsula = (function(window, undefined) {
      * @return {Boolean} true if device is touch, false otherwise
      */
     var isTouchDevice = function() {
-        return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) 
+        return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
     };
 
     /**
@@ -779,8 +760,10 @@ window.Peninsula = (function(window, undefined) {
     Peninsula.isEmpty = isEmpty; //tested
     Peninsula.isUrl = isUrl; //
     Peninsula.loadScript = loadScript;
+    Peninsula.bindEvent = bindEvent;
     Peninsula.getInjectedScripts = getInjectedScripts;
     Peninsula.getInjectedStyles = getInjectedStyles;
+    Peninsula.getInjectedStylesSheets = getInjectedStylesSheets;
     Peninsula.getScripts = getScripts;
     Peninsula.getStyles = getStyles;
     Peninsula.cformat = cformat;
@@ -796,6 +779,7 @@ window.Peninsula = (function(window, undefined) {
     Peninsula.convertMS = convertMS;
     Peninsula.preloadImages = preloadImages;
     Peninsula.multiLine = multiLine;
+    Peninsula.injectHTML = injectHTML;
     Peninsula.injectCSS = injectCSS;
     Peninsula.injectStylesheet = injectStylesheet;
     Peninsula.inIframe = inIframe;

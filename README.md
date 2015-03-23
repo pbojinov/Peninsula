@@ -26,49 +26,77 @@ npm test
 
 ---
 
-#### contains
+Peninsula.encode
 
-#### isInteger
+Peninsula.decode
 
-#### isEmpty
+Peninsula.contains
 
-#### isUrl
+Peninsula.typeOf
 
-#### loadScript
+Peninsula.isInteger
 
-#### cformat
+Peninsula.isEmpty
 
-#### first
+Peninsula.isUrl
 
-#### merge
+Peninsula.loadScript
 
-#### shuffle
+Peninsula.bindEvent
 
-#### select
+Peninsula.getInjectedScripts
 
-#### renameProperty
+Peninsula.getInjectedStyles
 
-#### token
+Peninsula.getInjectedStylesSheets
 
-#### trim
+Peninsula.getScripts
 
-#### uuid
+Peninsula.getStyles
 
-#### now
+Peninsula.cformat
 
-#### convertMS
+Peninsula.first
 
-#### preloadImages
+Peninsula.merge
 
-#### multiLine
+Peninsula.shuffle
+
+Peninsula.select
+
+Peninsula.renameProperty
+
+Peninsula.token
+
+Peninsula.trim
+
+Peninsula.uuid
+
+Peninsula.now
+
+Peninsula.convertMS
+
+Peninsula.preloadImages
+
+Peninsula.multiLine
+
+Peninsula.injectHTML
+
+Peninsula.injectCSS
+
+Peninsula.injectStylesheetet;
+
+Peninsula.inIframe
+
+Peninsula.isTouchDevice
 
 ### Properties
 
 ---
 
-#### _version
+Peninsula._version
 
-#### _baseUrl
+Peninsula._baseUrl
 
 ## Module forms
 
@@ -76,6 +104,7 @@ Peninusla is currently not available in AMD, CommonJS or other modules. Please f
 
 ## Release History
 
+* 2015-03-23   v0.2.2 register with bower, fix jshint errors
 * 2015-03-23   v0.2.1 update docs, fix npm test, fix karma.conf
 * 2013-09-05   v0.1.0 inital release
 
