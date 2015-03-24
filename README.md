@@ -104,6 +104,9 @@ Peninusla is currently not available in AMD, CommonJS or other modules. Please f
 
 ## Release History
 
+* **v0.2.3** - 2015-03-23
+	- Fix issue with wrong source in the `/src` folder
+
 * **v0.2.2** - 2015-03-23
 	- Register with Bower
 	- Fix some errors courtesy of jshint

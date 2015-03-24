@@ -1,18 +1,21 @@
 /**
  * Author: petar
- * Date: 9/11/13
+ * Date: 03/23/15
  */
 
 window.Peninsula = (function(window, undefined) {
 
-    var version = '0.0.1',
+    'use strict';
+
+    var version = '0.2.3',
         seed = '1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm',
         location = window.location,
         document = window.document,
         currentAbsolutePath = location.toString(),
         baseUrl = currentAbsolutePath.substring(0, currentAbsolutePath.lastIndexOf('/')) + '/',
         injectedScripts = {},
-        injectedStyles = {};
+        injectedStyles = {},
+        injectedStyleSheets = {};
 
     var Peninsula = {};
 
@@ -45,11 +48,11 @@ window.Peninsula = (function(window, undefined) {
     var Base64 = {
 
         // private property
-        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+        _keyStr: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=',
 
         // public method for encoding
         encode: function(input) {
-            var output = "";
+            var output = '';
             var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
             var i = 0;
 
@@ -83,12 +86,12 @@ window.Peninsula = (function(window, undefined) {
 
         // public method for decoding
         decode: function(input) {
-            var output = "";
+            var output = '';
             var chr1, chr2, chr3;
             var enc1, enc2, enc3, enc4;
             var i = 0;
 
-            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, '');
 
             while (i < input.length) {
 
@@ -120,8 +123,8 @@ window.Peninsula = (function(window, undefined) {
 
         // private method for UTF-8 encoding
         _utf8_encode: function(string) {
-            string = string.replace(/\r\n/g, "\n");
-            var utftext = "";
+            string = string.replace(/\r\n/g, '\n');
+            var utftext = '';
 
             for (var n = 0; n < string.length; n++) {
 
@@ -145,7 +148,7 @@ window.Peninsula = (function(window, undefined) {
 
         // private method for UTF-8 decoding
         _utf8_decode: function(utftext) {
-            var string = "";
+            var string = '';
             var i = 0;
             var c = c1 = c2 = 0;
 
@@ -180,7 +183,7 @@ window.Peninsula = (function(window, undefined) {
         return Base64.encode(input);
     };
 
-    var decode = function() {
+    var decode = function(input) {
         return Base64.decode(input);
     };
 
@@ -216,27 +219,6 @@ window.Peninsula = (function(window, undefined) {
         div.setAttribute('id', elementId);
         div.innerHTML = content;
         document.body.appendChild(div);
-    };
-
-    /**
-     * Add an event listener on an element or array of elements
-     *
-     * @method addEventListener
-     * @param element {DOMNode}
-     * @param eventName {String}
-     * @param eventHandler {Function}
-     */
-    var addEventListener = function(element, eventName, eventHandler) {
-        if (typeOf(eventName) === 'array') {
-            for (var i = 0, l = eventName.length; i < l; ++i) {
-                addEventListener(element, eventName[i], eventHandler);
-            }
-        }
-        if ('addEventListener' in element) {
-            element.addEventListener(eventName, handler, false);
-        } else if ('attachEvent' in element) {
-            element.attachEvent('on' + eventName, handler);
-        }
     };
 
     /**
@@ -361,7 +343,7 @@ window.Peninsula = (function(window, undefined) {
 
     /**
      * Return all injected scripts loaded on the page by Peninsula
-     * @returns [Array] array of script tags
+     * @returns {Object} object of script tags
      */
     var getInjectedScripts = function() {
         return injectedScripts;
@@ -369,11 +351,19 @@ window.Peninsula = (function(window, undefined) {
 
     /**
      * Return all styles loaded on the page by Peninsula
-     * @returns [Array] array of style tags
+     * @returns {Object} object of style tags
      */
     var getInjectedStyles = function() {
         return injectedStyles;
-    }
+    };
+
+    /**
+     * Return all style sheets loaded on the page by Peninsula
+     * @returns {Object} object of style sheets
+     */
+    var getInjectedStylesSheets = function() {
+        return injectedStyleSheets;
+    };
 
     /**
      *
@@ -382,9 +372,9 @@ window.Peninsula = (function(window, undefined) {
      * @param arguments
      * @returns {*}
      */
-    var cformat = function(string, arguments) {
+    var cformat = function(string, theArguments) {
         var pattern = /\{\d+\}/g;
-        var args = arguments;
+        var args = theArguments;
         return string.replace(pattern, function(capture) {
             return args[capture.match(/\d+/)];
         });
@@ -462,7 +452,7 @@ window.Peninsula = (function(window, undefined) {
                 }
                 return input;
             } else {
-                throw 'invalid parameter: can only shuffle an array or string'
+                throw 'invalid parameter: can only shuffle an array or string';
             }
         }
     };
@@ -669,7 +659,7 @@ window.Peninsula = (function(window, undefined) {
         } else if (typeof resources === 'string') {
             createImage(resources);
         } else {
-            throw 'preloadImages invalid parameters, must pass in an array or string of resources'
+            throw 'preloadImages invalid parameters, must pass in an array or string of resources';
         }
 
         function createImage(src) {
@@ -690,6 +680,74 @@ window.Peninsula = (function(window, undefined) {
     };
 
     /**
+     * Light wrapper around addEventListener for IE8 support
+     *
+     * @method bindEvent
+     * @param {DOMElement} element - the dom element on which to listen to
+     * @param {DOMEvent} eventName - event to listen for
+     * @param {function} eventHandler - function to call when event fires
+     */
+    var bindEvent = function(element, eventName, eventHandler) {
+        if (element.addEventListener) {
+            element.addEventListener(eventName, eventHandler, false);
+        } else if (element.attachEvent) {
+            element.attachEvent('on' + eventName, eventHandler);
+        }
+    };
+
+    /**
+     * Load a new theme style sheet in the head of the page
+     *
+     * @method injectStylesheet
+     * @param url {string} the url style sheet
+     * @param callback {function} optional callback function called when script loads
+     */
+    var injectStylesheet = function(url, callback) {
+        var sheet = document.createElement('link'),
+            id = uuid(),
+            loaded;
+        sheet.setAttribute('rel', 'stylesheet');
+        sheet.setAttribute('type', 'text/css');
+        sheet.setAttribute('href', url);
+        if (callback) {
+            sheet.onreadystatechange = sheet.onload = function() {
+                if (!loaded) {
+                    callback();
+                }
+                loaded = true;
+            };
+        }
+        document.getElementsByTagName('head')[0].appendChild(sheet);
+        injectedStyleSheets.id = url;
+    };
+
+    /**
+     * Determine if the context of where this code is being executed is an iframe
+     *
+     * @method isIframe
+     * @return {Boolean} true if executed in iframe, false otherwise
+     */
+    var inIframe = function() {
+        try {
+            return window.self !== window.top;
+        } catch (e) {
+            return true;
+        }
+    };
+
+    /**
+     * Determine if context where this code is running is a touch device
+     * Test for Touch Events of Pointer Events running on touch-capable device
+     * 
+     * https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
+     * 
+     * @return {Boolean} true if device is touch, false otherwise
+     */
+    var isTouchDevice = function() {
+        return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+    };
+
+    /**
      * Expose public API
      * @type {Function}
      */
@@ -702,8 +760,10 @@ window.Peninsula = (function(window, undefined) {
     Peninsula.isEmpty = isEmpty; //tested
     Peninsula.isUrl = isUrl; //
     Peninsula.loadScript = loadScript;
+    Peninsula.bindEvent = bindEvent;
     Peninsula.getInjectedScripts = getInjectedScripts;
     Peninsula.getInjectedStyles = getInjectedStyles;
+    Peninsula.getInjectedStylesSheets = getInjectedStylesSheets;
     Peninsula.getScripts = getScripts;
     Peninsula.getStyles = getStyles;
     Peninsula.cformat = cformat;
@@ -719,7 +779,11 @@ window.Peninsula = (function(window, undefined) {
     Peninsula.convertMS = convertMS;
     Peninsula.preloadImages = preloadImages;
     Peninsula.multiLine = multiLine;
+    Peninsula.injectHTML = injectHTML;
     Peninsula.injectCSS = injectCSS;
+    Peninsula.injectStylesheet = injectStylesheet;
+    Peninsula.inIframe = inIframe;
+    Peninsula.isTouchDevice = isTouchDevice;
 
     /**
      * Public properties

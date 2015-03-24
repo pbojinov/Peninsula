@@ -1,7 +1,7 @@
 {
   "name": "Peninsula",
   "main": "src/peninsula.js",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "homepage": "https://github.com/pbojinov/Peninsula",
   "authors": [
     "Petar Bojinov <petarbojinov@gmail.com>"
