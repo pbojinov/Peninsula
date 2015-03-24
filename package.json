@@ -1,5 +1,5 @@
 {
-  "name": "Peninsula.js",
+  "name": "peninsula",
   "version": "0.2.4",
   "description": "Peninsula is a collection of commonly used client-side functions",
   "main": "peninsula.js",
