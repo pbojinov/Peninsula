@@ -104,9 +104,19 @@ Peninusla is currently not available in AMD, CommonJS or other modules. Please f
 
 ## Release History
 
-* 2015-03-23   v0.2.2 register with bower, fix jshint errors
-* 2015-03-23   v0.2.1 update docs, fix npm test, fix karma.conf
-* 2013-09-05   v0.1.0 inital release
+* **v0.2.2** - 2015-03-23
+	- Register with Bower
+	- Fix some errors courtesy of jshint
+
+* **v0.2.1** - 2015-03-23
+	- Update docs
+	- Add new logo
+	- Clean up tests directory
+	- Fix `npm tetst` so it works now
+	- Add new karma.conf for testing
+
+* **v0.1.0** - 2013-09-05
+	- Initial release
 
 ## License
 
