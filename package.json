@@ -2,7 +2,7 @@
   "name": "peninsula",
   "version": "0.2.4",
   "description": "Peninsula is a collection of commonly used client-side functions",
-  "main": "peninsula.js",
+  "main": "src/peninsula.js",
   "scripts": {
     "test": "karma start test/peninsula.conf.js --log-level info --single-run"
   },
