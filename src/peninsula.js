@@ -7,7 +7,7 @@ window.Peninsula = (function(window, undefined) {
 
     'use strict';
 
-    var version = '0.2.4',
+    var version = '0.2.5',
         seed = '1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm',
         location = window.location,
         document = window.document,
