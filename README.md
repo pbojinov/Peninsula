@@ -6,12 +6,23 @@ Peninsula is a collection of commonly resuable client-side functions. It was bor
 
 ## Getting Started
 
-Install from bower 
+Install using Bower 
+
 ```
 bower install peninsula
 ```
 
-Or place the `src/peninsula.js` file in your project.
+
+Install using NPM
+```
+npm install peninsula
+```
+
+Or by placing the `src/peninsula.js` file in your project.
+
+```html
+<script type="text/javascript" src="src/peninsula.js"/>
+```
 
 ## Running Tests
 
