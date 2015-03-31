@@ -109,9 +109,9 @@ Peninsula._version
 
 Peninsula._baseUrl
 
-## Module forms
+## Module access
 
-Peninusla is currently not available in AMD, CommonJS or other modules. Please file an issue or submit a PR if you need support for other module formats.
+Peninusla can be used through AMD, CommonJS or the `window` object.
 
 ## Release History
 
