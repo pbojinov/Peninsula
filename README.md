@@ -115,6 +115,9 @@ Peninusla is currently not available in AMD, CommonJS or other modules. Please f
 
 ## Release History
 
+* **v0.2.6** - 2015-03-31
+	- Add support for AMD and CommonJS style module importing
+
 * **v0.2.4** - 2015-03-23
 	- Fix issue with wrong library source in the `/src` folder
 	- Remove library from the root

@@ -1,16 +1,25 @@
 /**
  * Author: petar
- * Date: 03/23/15
+ * Date: 03/31/15
  */
 
-window.Peninsula = (function(window, undefined) {
+(function(root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define('Peninsula', factory(root));
+    } else if (typeof exports === 'object') {
+        module.exports = factory(root);
+    } else {
+        root['Peninsula'] = factory(root);
+    }
+})(window || this, function(root, undefined) {
 
     'use strict';
 
-    var version = '0.2.5',
+    var version = '0.2.6',
         seed = '1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm',
-        location = window.location,
-        document = window.document,
+        location = root.location,
+        document = root.document,
+        navigator = root.navigator,
         currentAbsolutePath = location.toString(),
         baseUrl = currentAbsolutePath.substring(0, currentAbsolutePath.lastIndexOf('/')) + '/',
         injectedScripts = {},
@@ -22,9 +31,9 @@ window.Peninsula = (function(window, undefined) {
     /**
      * For browsers like IE8 and below so we do not reek havok
      */
-    if (!('console' in window)) {
-        function nothing() {}
-        window.console = {
+    if (!('console' in root)) {
+        var nothing = function() {};
+        root.console = {
             debug: nothing,
             dir: nothing,
             error: nothing,
@@ -333,7 +342,7 @@ window.Peninsula = (function(window, undefined) {
         return document.getElementsByTagName('script');
     };
 
-        /**
+    /**
      * Return all styles on the page
      * @returns [Array] array of style tags
      */
@@ -612,7 +621,7 @@ window.Peninsula = (function(window, undefined) {
             match = query.match(id);
 
         //user is asking for an element by id
-        if ( !! match) {
+        if (!!match) {
             return document.getElementById(query.replace(/#/g, ''));
         } else if (('querySelectorAll' in document)) {
             var el = document.querySelectorAll(query);
@@ -729,7 +738,7 @@ window.Peninsula = (function(window, undefined) {
      */
     var inIframe = function() {
         try {
-            return window.self !== window.top;
+            return root.self !== root.top;
         } catch (e) {
             return true;
         }
@@ -744,14 +753,13 @@ window.Peninsula = (function(window, undefined) {
      * @return {Boolean} true if device is touch, false otherwise
      */
     var isTouchDevice = function() {
-        return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+        return (('ontouchstart' in root) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
     };
 
     /**
      * Expose public API
      * @type {Function}
      */
-
     Peninsula.encode = encode;
     Peninsula.decode = decode;
     Peninsula.contains = contains; //tested
@@ -795,9 +803,8 @@ window.Peninsula = (function(window, undefined) {
     /**
      * Shorthand way to access Peninsula
      */
-
-    window.Pen = Peninsula;
+    root.Pen = Peninsula;
 
     return Peninsula;
 
-})(window);
+});

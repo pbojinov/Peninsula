@@ -1,6 +1,6 @@
 {
   "name": "peninsula",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Peninsula is a collection of commonly used client-side functions",
   "main": "src/peninsula.js",
   "scripts": {
