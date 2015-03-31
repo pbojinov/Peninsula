@@ -15,7 +15,7 @@
 
     'use strict';
 
-    var version = '0.2.6',
+    var version = '0.2.7',
         seed = '1234567890QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm',
         location = root.location,
         document = root.document,
@@ -745,7 +745,7 @@
     };
 
     /**
-     * Determine if context where this code is running is a touch device
+     * Determine if context where this code is being executed is a touch device.
      * Test for Touch Events of Pointer Events running on touch-capable device
      * 
      * https://hacks.mozilla.org/2013/04/detecting-touch-its-the-why-not-the-how/
@@ -754,6 +754,24 @@
      */
     var isTouchDevice = function() {
         return (('ontouchstart' in root) || (navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0));
+    };
+
+    /**
+     * Merge defaults with user options
+     * 
+     * @param {Object} defaults Default settings
+     * @param {Object} options User options
+     * @returns {Object} Merged values of defaults and options
+     */
+    var extend = function(defaults, options) {
+        var extended = {};
+        for(var key in defaults) {
+            extended[key] = defaults[key];
+        };
+        for(var key in options) {
+            extended[key] = options[key];
+        };
+        return extended;
     };
 
     /**
@@ -792,6 +810,7 @@
     Peninsula.injectStylesheet = injectStylesheet;
     Peninsula.inIframe = inIframe;
     Peninsula.isTouchDevice = isTouchDevice;
+    Peninsula.extend = extend;
 
     /**
      * Public properties

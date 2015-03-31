@@ -101,6 +101,9 @@ Peninsula.inIframe
 
 Peninsula.isTouchDevice
 
+Peninsula.extend
+
+
 ### Properties
 
 ---
@@ -114,6 +117,9 @@ Peninsula._baseUrl
 Peninusla can be used through AMD, CommonJS or the `window` object.
 
 ## Release History
+
+* **v0.2.7** - 2015-03-31
+	- Add new function `extend`
 
 * **v0.2.6** - 2015-03-31
 	- Add support for AMD and CommonJS style module importing
